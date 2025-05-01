@@ -1,3 +1,5 @@
-scraped/*.html
+scraped
+logs
 links.txt
 node_modules
+.env
