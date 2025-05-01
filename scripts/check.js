@@ -1,13 +1,8 @@
 import { readFileSync } from "fs";
 import { log } from "console";
 
-const outputDir = "../scraped/";
-
-const linksPath = process.argv[3];
-if (!linksPath) {
-  log("❌ Path argument not found!");
-  process.exit(1);
-}
+const linksPath = process.argv[2] || "./links.txt";
+const outputDir = process.argv[3] || "./scraped";
 
 (async () => {
   const allLinks = readFileSync(linksPath, { encoding: "utf8" }).split("\n");
