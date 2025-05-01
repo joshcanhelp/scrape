@@ -1,14 +1,28 @@
 import * as cheerio from "cheerio";
 import { log } from "console";
-import { readdirSync } from "fs";
-import { readFileSync, writeFileSync } from "fs";
+import { readdirSync, readFileSync, rmSync } from "fs";
+import path from "path";
 
-const outputDir = "../scraped/";
+const outputDir = process.argv[2] || "./scraped";
 
 (async () => {
-  readdirSync(outputDir).forEach((file) => {
-    const html = readFileSync(outputDir + file, { encoding: "utf8" });
+  const htmlFiles = readdirSync(outputDir).filter((file) => file.endsWith(".html"));
+
+  if (!htmlFiles.length) {
+    return log(`No HTML files found in ${outputDir}`);
+  }
+
+  for (const file of htmlFiles) {
+    log(`Parsing ${file}...`);
+    const fullFilePath = path.join(outputDir, file);
+    const html = readFileSync(fullFilePath, { encoding: "utf8" });
     const $ = cheerio.load(html);
-    log($("title").text());
-  });
+
+    log($("head title").text());
+
+    const articleTagsRaw = $("head").find("meta[property=article:tag]").prop("content");
+    log(articleTagsRaw ? articleTagsRaw : "<no tags>");
+
+    log("---")
+  };
 })();
